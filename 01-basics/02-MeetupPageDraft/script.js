@@ -44,23 +44,61 @@ const agendaItemIcons = {
   other: 'cal-sm',
 };
 
+function getDateOnlyString(date) {
+  const YYYY = date.getFullYear();
+  const MM = (date.getMonth() + 1).toString().padStart(2, '0');
+  const DD = date.getDate().toString().padStart(2, '0');
+  return `${YYYY}-${MM}-${DD}`;
+}
+
 export const app = new Vue({
   el: '#app',
 
-  data: {
-    //
+  data() {
+    return {
+      meetup: {}
+    }
   },
+  
 
   mounted() {
     // Требуется получить данные митапа с API
+    this.getMeetupData()
+
   },
 
   computed: {
-    //
+    meetupFormated() {
+      return {
+        cover: this.meetup.imageId
+          ? getMeetupCoverLink(this.meetup)
+          : undefined,
+        date: new Date(this.meetup.date),
+        localDate: new Date(this.meetup.date).toLocaleString(navigator.language, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        dateOnlyString: getDateOnlyString(new Date(this.meetup.date)),
+      }
+    }
   },
 
   methods: {
     // Получение данных с API предпочтительнее оформить отдельным методом,
     // а не писать прямо в mounted()
-  },
+    async getMeetupData() {
+      let response = await fetch(API_URL + '/meetups/' + MEETUP_ID);
+      this.meetup = await response.json();
+      console.log(this.meetup)
+
+      for(const agendaItem of this.meetup.agenda) {
+        if (!agendaItem.title) {
+          agendaItem.title = agendaItemTitles[agendaItem.type]
+        }
+        agendaItem.icon = 'icon' + '-' + agendaItemIcons[agendaItem.type] + '.' + 'svg'
+      }
+    },
+
+  }
 });
