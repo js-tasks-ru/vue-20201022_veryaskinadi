@@ -1,9 +1,9 @@
 export const MeetupCover = {
   template: `
-    <div v-if="this.link" :style="this.style">
+    <div class="meetup-cover" v-if="link" :style="style">
       <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>
-    <div v-else>
+    <div class="meetup-cover" v-else>
       <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>
   `,

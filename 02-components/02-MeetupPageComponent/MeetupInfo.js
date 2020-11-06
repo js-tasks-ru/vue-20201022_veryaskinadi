@@ -6,7 +6,7 @@ function getDateOnlyString(date) {
 }
 export const MeetupInfo = {
   template: `
-    <ul>
+    <ul class="info-list">
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-user.svg" />
         {{ organizer }}
