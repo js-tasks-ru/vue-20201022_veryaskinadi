@@ -1,9 +1,6 @@
 export const MeetupCover = {
   template: `
-    <div class="meetup-cover" v-if="link" :style="style">
-      <h1 class="meetup-cover__title">{{ title }}</h1>
-    </div>
-    <div class="meetup-cover" v-else>
+    <div class="meetup-cover" :style="style">
       <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>
   `,
@@ -20,7 +17,7 @@ export const MeetupCover = {
 
   computed: {
     style() {
-      return  { '--bg-url': `url(${this.link})` } 
+      return this.link ? { '--bg-url': `url(${this.link})` } : ""
     }
   },
 };

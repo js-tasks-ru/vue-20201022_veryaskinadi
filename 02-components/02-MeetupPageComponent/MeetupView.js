@@ -9,7 +9,7 @@ export const MeetupView = {
 
   template: `
   <div>
-    <meetup-cover :title="meetup.title" :link="this.cover"/>
+    <meetup-cover :title="meetup.title" :link="cover"/>
     
     <div class="container">
       <div class="meetup">

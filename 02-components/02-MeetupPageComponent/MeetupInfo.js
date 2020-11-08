@@ -17,7 +17,7 @@ export const MeetupInfo = {
       </li>
       <li>
         <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time :datetime="this.dateFormated">{{ this.LocalDateFormated }}</time>
+        <time :datetime="dateFormated">{{ LocalDateFormated }}</time>
       </li>
     </ul>`,
 
