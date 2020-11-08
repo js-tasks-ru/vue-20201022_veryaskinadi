@@ -13,6 +13,7 @@ export function getMeetupCoverLink(meetup) {
   return `${API_URL}/images/${meetup.imageId}`;
 }
 
+
 /**
  * Получает данные митапа по его ID с API
  * @param {Number} id

@@ -1,16 +1,34 @@
-// import { MeetupView } from './MeetupView.js';
-// import { MEETUP_ID, fetchMeetup } from './data.js';
+import { MeetupView } from './MeetupView.js';
+import { MEETUP_ID, fetchMeetup } from './data.js';
 
-/*export const MeetupPage = {
+const API_URL = 'https://course-vue.javascript.ru/api';
+
+export const MeetupPage = {
   name: 'MeetupPage',
 
-  template: `<div>???</div>`,
+  template: `
+  <div>
+    <meetup-view v-if="meetup" :meetup="meetup"/>
+  </div>`,
 
-  // components
+  components: { MeetupView },
 
-  // data
+  data() {
+    return {
+      meetup: null
+    }
+  },
 
-  // mounted
+  mounted() {
+    // Требуется получить данные митапа с API
+    this.getMeetupData()
+  },
 
-  // methods
-};*/
+  methods: {
+    // Получение данных с API предпочтительнее оформить отдельным методом,
+    // а не писать прямо в mounted()
+    async getMeetupData() {
+      this.meetup = await fetchMeetup(MEETUP_ID);
+    },
+  }
+};
