@@ -41,7 +41,6 @@ export const MeetupsCalendar = {
   data () {
     return {
       date: new Date(),
-      daysArray: [],
     }
   },
   // Пропсы
@@ -55,24 +54,10 @@ export const MeetupsCalendar = {
   computed: {
     dateString() {
       var options = { month: 'long' };
-      return this.date.toLocaleDateString('ru-RU', options) + ' ' + this.date.getFullYear()
-    }
-  },
-
-  mounted() {
-    this.getCurrentMonth()
-    this.generateDays()
-    this.putMeetups()
-  },
-
-  methods: {
-    async getCurrentMonth() {
-      let date = new Date()
-      date.setDate(1)
-      this.date = date
+      return this.date.toLocaleDateString(navigator.language, options) + ' ' + this.date.getFullYear()
     },
-    generateDays() {
-      this.daysArray = []
+    daysArray() {
+      const daysArray = []
       const lastDay = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0).getDate()
       const weekDay = this.date.getDay()
       const currentMonth = this.date.getMonth()
@@ -89,40 +74,62 @@ export const MeetupsCalendar = {
       for (let date = 1; date <= lastDay; date++) {
         const month = currentMonth
         const year = currentYear
-        this.daysArray.push({date, month, year, active: true })
+        const meetups = []
+        for (let meetup of this.meetups) {
+          const dateMeetup = new Date(meetup.date)
+          if (date === dateMeetup.getDate() && month === dateMeetup.getMonth() && year === dateMeetup.getFullYear()) {
+            meetups.push(meetup)
+          }
+        }
+        daysArray.push({date, month, year, meetups, active: true})
       }
       // Заполняется календарь днями предыдущео месяца
       const lastDayPreviousMonth = new Date(this.date.getFullYear(), this.date.getMonth(), 0).getDate()
-      for (let date = lastDayPreviousMonth; date > lastDayPreviousMonth - weekDay; date--) {
+      for (let date = lastDayPreviousMonth; date > lastDayPreviousMonth - ((weekDay || 7)- 1); date--) {
         const month = previousMonth
         const year = previousYear
-        this.daysArray.unshift({date, month, year, active: false })
-      }
-      // Заполняется календарь днями следующего месяца
-      for (let date = 1; this.daysArray.length % 7 > 0; date++ ) {
-        const month = nextMonth
-        const year = nextYear
-        this.daysArray.push({date, month, year, active: false })
-      } 
-    },
-
-    putMeetups() {
-      for (let day of this.daysArray) {
-        day.meetups = []
+        const meetups = []
         for (let meetup of this.meetups) {
           const dateMeetup = new Date(meetup.date)
-          if (day.date === dateMeetup.getDate() & day.month === dateMeetup.getMonth() & day.year === dateMeetup.getFullYear()) {
-            day.meetups.push(meetup)
+          if (date === dateMeetup.getDate() && month === dateMeetup.getMonth() && year === dateMeetup.getFullYear()) {
+            meetups.push(meetup)
           }
         }
+        daysArray.unshift({date, month, year, meetups, active: false })
       }
+      // Заполняется календарь днями следующего месяца
+      for (let date = 1; daysArray.length % 7 > 0; date++ ) {
+        const month = nextMonth
+        const year = nextYear
+        const meetups = []
+        for (let meetup of this.meetups) {
+          const dateMeetup = new Date(meetup.date)
+          if (date === dateMeetup.getDate() && month === dateMeetup.getMonth() && year === dateMeetup.getFullYear()) {
+            meetups.push(meetup)
+          }
+        }
+        daysArray.push({date, month, year, meetups, active: false })
+      } 
+      return daysArray
     },
 
+    
+  },
+
+  mounted() {
+    this.getFirstDayOfCurrentMonth()
+  },
+
+  methods: {
     changeMonth(interval) {
       this.date = new Date(this.date.setMonth(this.date.getMonth() + interval))
-      this.generateDays()
-      this.putMeetups()
-    }
+
+    },
+    getFirstDayOfCurrentMonth() {
+      let date = new Date()
+      date.setDate(1)
+      this.date = date
+    },
   },
 
   // В качестве локального состояния требуется хранить что-то,
