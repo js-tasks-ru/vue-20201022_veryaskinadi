@@ -10,6 +10,10 @@ export const router = new VueRouter({
   mode: 'history',
   base: '/04-SPA/03-NotFound',
   routes: [
+    { 
+      path: "*", 
+      component: NotFoundPage,
+    },
     {
       path: '/page-a',
       component: PageA,
@@ -18,5 +22,6 @@ export const router = new VueRouter({
       path: '/page-b',
       component: PageB,
     },
+    
   ],
 });
