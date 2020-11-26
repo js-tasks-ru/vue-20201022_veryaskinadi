@@ -5,10 +5,6 @@ Vue.use(VueRouter);
 
 export function scrollBehavior(to, from, savedPosition) {
 
-  console.log('from :', from)
-  console.log('to :', to)
-  console.log('savedPosition :', savedPosition)
-
   if (savedPosition) {
     return savedPosition
   }
@@ -23,12 +19,9 @@ export function scrollBehavior(to, from, savedPosition) {
     return false
   }
 
-  if (to.name === 'meetup-description' && from.name === 'meetups') {
-    return { x: 0, y: 0 }
-  }
-
   return { x: 0, y: 0}
 }
+
 export const router = new VueRouter({
   mode: 'history',
 
