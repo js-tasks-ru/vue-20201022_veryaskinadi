@@ -11,8 +11,6 @@
 
 <script>
 import MeetupsView from '../components/MeetupsView';
-import { router } from '../router';
-
 
 export default {
   name: 'PageWithQuery',
@@ -21,65 +19,68 @@ export default {
   data() {
     return {
       query: {
-        view: router.currentRoute.query.view || "list",
-        date: router.currentRoute.query.date || "all",
-        participation: router.currentRoute.query.participation || "all",
-        search: router.currentRoute.query.search || ""
+        view: this.$route.query.view || "list",
+        date: this.$route.query.date || "all",
+        participation: this.$route.query.participation || "all",
+        search: this.$route.query.search || ""
       }
     }
   },
 
   computed: {
-    queryDefault() {
-      const queryDefault = {
-        view: this.query.view,
-        date: this.query.date,
-        participation: this.query.participation,
-        search: this.query.search
-      }
-      if (queryDefault.view === 'list') {
-        delete queryDefault.view
-      }
-      if (queryDefault.date === 'all') {
-        delete queryDefault.date
-      }
-      if (queryDefault.participation === 'all') {
-        delete queryDefault.participation
-      }
-      if (queryDefault.search === '') {
-        delete queryDefault.search
-      }
-      return queryDefault
+    queryRoute() {
+      return this.$route.query
     }
   },
 
   watch: {
-    queryDefault: function(queryDefault){
-      this.replace(queryDefault)
+    queryRoute(query) {
+      this.query.view = query.view || 'list'
+      this.query.date = query.date || 'all'
+      this.query.participation = query.participation || 'all'
+      this.query.search = query.search || ''
     }
-  },
-
-  beforeMount() {
-    this.replace(this.queryDefault)
   },
 
   methods: {
     updateView: function(view) {
-      this.query.view = view
+      this.replace({view})
     },
     updateDate: function(date) {
-      this.query.date = date
+      this.replace({date})
     },
     updateParticipation: function (participation) {
-      this.query.participation = participation
+      this.replace({participation})
     }, 
     updateSearch: function (search) {
-      this.query.search = search
+      this.replace({search})
     },
-    replace: function(queryDefault) {
-      router.replace({ query: queryDefault }).catch(err => {
-        if (err.name !== 'NavigationDuplicated') {
-          throw err;
+    replace: function(query) {
+      const routerQuery = {
+        date: this.$route.query.date,
+        participation: this.$route.query.participation,
+        search: this.$route.query.search,
+        view: this.$route.query.view,
+      }
+      
+      Object.assign(routerQuery, query)
+
+      if (routerQuery.view === 'list') {
+        routerQuery.view = undefined
+      }
+      if (routerQuery.date === 'all') {
+        routerQuery.date = undefined
+      }
+      if (routerQuery.participation === 'all') {
+        routerQuery.participation = undefined
+      }
+      if (routerQuery.search === '') {
+        routerQuery.search = undefined
+      }
+
+      this.$router.replace({ query: routerQuery }).catch(error => {
+        if (error.name !== 'NavigationDuplicated') {
+          throw error
         }
       });
     }
