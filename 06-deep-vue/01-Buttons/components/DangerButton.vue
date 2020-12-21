@@ -1,5 +1,5 @@
 <template>
-  <base-button :tag="tag" :block="block" :to="to" class="button_danger" v-on="$listeners"><slot/></base-button>
+  <base-button class="button_danger" v-on="$listeners" v-bind="$attrs"><slot/></base-button>
 </template>
 
 <script>
@@ -8,22 +8,6 @@ export default {
   inheritAttrs: false,
   components: { BaseButton },
   name: 'DangerButton',
-
-  props: {
-    block: {
-      type: Boolean,
-    },
-    tag: {
-      type: String,
-      default: 'button',
-      validator: function (value) {
-        return ['button', 'a', 'router-link'].indexOf(value) !== -1
-      }
-    },
-    to: {
-      type: String
-    }
-  }
 };
 </script>
 

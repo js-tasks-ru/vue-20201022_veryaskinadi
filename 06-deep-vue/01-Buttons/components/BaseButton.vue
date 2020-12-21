@@ -1,25 +1,16 @@
+<template>
+  <component 
+    v-bind:is="tag" v-on="$listeners"  v-bind="$attrs"
+    class= 'button'
+    :class= "block ? 'button_block' : ''"
+  >
+    <slot/>
+  </component>
+</template>
 <script>
 export default {
   name: 'BaseButton',
   
-  render(h) {
-    return h(
-      this.tag,
-      { 
-        class: 'button' + (this.block ? ' button_block' : ''),
-        on: {
-          click: () => {
-            this.$emit('click')
-          }
-        },
-        props: {
-          to: this.to || ''
-        }
-      }, 
-      this.$slots.default
-    )
-  },
-
   props: {
     block: {
       type: Boolean,

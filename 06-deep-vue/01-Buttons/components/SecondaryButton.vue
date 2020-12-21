@@ -1,5 +1,5 @@
 <template>
-  <base-button :tag="tag" :block="block" :to="to" class="button_secondary" v-on="$listeners"><slot/></base-button>
+  <base-button v-bind="$attrs" class="button_secondary" v-on="$listeners"><slot/></base-button>
 </template>
 
 <script>
@@ -8,21 +8,6 @@ export default {
   inheritAttrs: false,
   components: { BaseButton },
   name: 'SecondaryButton',
-  props: {
-    block: {
-      type: Boolean,
-    },
-    tag: {
-      type: String,
-      default: 'button',
-      validator: function (value) {
-        return ['button', 'a', 'router-link'].indexOf(value) !== -1
-      }
-    },
-    to: {
-      type: String
-    }
-  }
 };
 </script>
 
