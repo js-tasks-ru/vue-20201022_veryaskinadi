@@ -1,9 +1,12 @@
 <template>
-  <button></button>
+  <base-button class="button_danger" v-on="$listeners" v-bind="$attrs"><slot/></base-button>
 </template>
 
 <script>
+import BaseButton from './BaseButton.vue';
 export default {
+  inheritAttrs: false,
+  components: { BaseButton },
   name: 'DangerButton',
 };
 </script>

@@ -1,18 +1,76 @@
 <template>
-  <div
-    class="input-group input-group_icon input-group_icon-left input-group_icon-right"
+  <div 
+    class="input-group"
+    :class="styleIcon"
   >
-    <img class="icon" />
+    <slot name="left-icon"></slot>
 
-    <input class="form-control form-control_rounded form-control_sm" />
+    <component 
+      :value.prop ="value"
+      v-bind:is="tag" v-on="$listeners" v-bind="$attrs" 
+      v-on:input="$emit('input', $event.target.value)"
+      v-on:change="$emit('change', $event.target.value)"
+      class="form-control" 
+      :class="style"
+    />
 
-    <img class="icon" />
+    <slot name="right-icon"></slot>
+    
   </div>
 </template>
 
 <script>
 export default {
+  inheritAttrs: false,
   name: 'AppInput',
+
+  props: {
+    small: {
+      type: Boolean
+    },
+    rounded: {
+      type: Boolean
+    },
+    multiline: {
+      type: Boolean
+    },
+    value: {
+      type: String
+    }
+  },
+
+  model: {
+    prop: 'value',
+    event: 'input'
+  },
+
+  computed: {
+    style() {
+      const style = []
+      if (this.small) {
+        style.push('form-control_sm')
+      }
+      if (this.rounded) {
+        style.push('form-control_rounded')
+      }
+      return style.join(' ')
+    },
+    tag() {
+      return this.multiline ? 'textarea' : 'input'
+    },
+    styleIcon() {
+      const styleIcon = new Set()
+      if (this.$scopedSlots['left-icon']) {
+        styleIcon.add('input-group_icon')
+        styleIcon.add('input-group_icon-left')
+      }
+      if (this.$scopedSlots['right-icon']) {
+        styleIcon.add('input-group_icon')
+        styleIcon.add('input-group_icon-right')
+      } 
+      return [...styleIcon].join(' ')
+    }
+  }
 };
 </script>
 
