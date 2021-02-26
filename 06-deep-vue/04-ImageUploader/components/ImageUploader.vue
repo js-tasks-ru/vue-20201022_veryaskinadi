@@ -1,24 +1,91 @@
 <template>
   <div class="image-uploader">
     <label
-      class="image-uploader__preview image-uploader__preview-loading"
-      :style="`--bg-image: url('https://course-vue.javascript.ru/api/images/1')`"
+      class="image-uploader__preview"
+      :class="state === states.loading ? 'image-uploader__preview-loading' : ''"
+      :style="state === states.loaded ? imageUrl : ``"
+      @click="deleteId"
     >
-      <span>Удалить изображение</span>
+      <span>{{ text }}</span>
       <input
+        :disabled="inputDisabled"
         type="file"
         accept="image/*"
         class="form-control-file"
+        @change="changeId"
       />
     </label>
   </div>
 </template>
 
 <script>
-// import { ImageService } from '../image-service';
+import { ImageService } from '../image-service';
+
+const states = {
+  default: 1,
+  loading: 2,
+  loaded: 3,
+}
 
 export default {
   name: 'ImageUploader',
+
+  data() {
+    return {
+      states: states,
+      state: this.imageId ? states.loaded : states.default,
+      inputDisabled: false,
+    }
+  },
+
+  model: {
+    prop: 'imageId',
+    event: 'change',
+  },
+
+  props: {
+    imageId: {
+      default: null,
+    },
+  },
+
+  computed: {
+    text() {
+      if (this.state === states.loading) {
+        return "Загрузка..."
+      } else if (this.imageId) {
+        return "Удалить изображение"
+      } else {
+        return "Загрузить изображение"
+      }
+    },
+    imageUrl() {
+      if (this.imageId) {
+        const url = ImageService.getImageURL(this.imageId)
+        return `--bg-image: url('${url}')`
+      } else return ''
+    }
+  },
+
+  methods: {
+    async changeId(event) {
+      this.state = states.loading
+      this.inputDisabled = true
+
+      const file = event.target.files[0]
+      const uploadedFile = await ImageService.uploadImage(file)
+      this.$emit('change', uploadedFile.id)
+
+      this.state = states.loaded
+      this.inputDisabled = false
+    },
+    deleteId() {
+      if (this.state === states.loaded) {
+        this.$emit('change', null)
+        this.state = states.default
+      }
+    }
+  }
 };
 </script>
 
