@@ -8,6 +8,7 @@
     >
       <span>{{ text }}</span>
       <input
+        ref="fileref"
         :disabled="inputDisabled"
         type="file"
         accept="image/*"
@@ -33,8 +34,8 @@ export default {
   data() {
     return {
       states: states,
-      state: this.imageId ? states.loaded : states.default,
       inputDisabled: false,
+      loading: false,
     }
   },
 
@@ -50,6 +51,17 @@ export default {
   },
 
   computed: {
+    state() {
+      if (this.loading) {
+        return states.loading
+      } else {
+        if (this.imageId) {
+          return states.loaded
+        } else {
+          return states.default
+        }
+      }
+    },
     text() {
       if (this.state === states.loading) {
         return "Загрузка..."
@@ -69,20 +81,21 @@ export default {
 
   methods: {
     async changeId(event) {
-      this.state = states.loading
+      this.loading = true
       this.inputDisabled = true
 
       const file = event.target.files[0]
       const uploadedFile = await ImageService.uploadImage(file)
       this.$emit('change', uploadedFile.id)
 
-      this.state = states.loaded
+      this.loading = false
       this.inputDisabled = false
     },
-    deleteId() {
+    deleteId(event) {
       if (this.state === states.loaded) {
+        event.preventDefault();
+        this.$refs.fileref.value = ''
         this.$emit('change', null)
-        this.state = states.default
       }
     }
   }
