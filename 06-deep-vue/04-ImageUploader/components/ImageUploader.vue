@@ -1,24 +1,104 @@
 <template>
   <div class="image-uploader">
     <label
-      class="image-uploader__preview image-uploader__preview-loading"
-      :style="`--bg-image: url('https://course-vue.javascript.ru/api/images/1')`"
+      class="image-uploader__preview"
+      :class="state === states.loading ? 'image-uploader__preview-loading' : ''"
+      :style="state === states.loaded ? imageUrl : ``"
+      @click="deleteId"
     >
-      <span>Удалить изображение</span>
+      <span>{{ text }}</span>
       <input
+        ref="fileref"
+        :disabled="inputDisabled"
         type="file"
         accept="image/*"
         class="form-control-file"
+        @change="changeId"
       />
     </label>
   </div>
 </template>
 
 <script>
-// import { ImageService } from '../image-service';
+import { ImageService } from '../image-service';
+
+const states = {
+  default: 1,
+  loading: 2,
+  loaded: 3,
+}
 
 export default {
   name: 'ImageUploader',
+
+  data() {
+    return {
+      states: states,
+      inputDisabled: false,
+      loading: false,
+    }
+  },
+
+  model: {
+    prop: 'imageId',
+    event: 'change',
+  },
+
+  props: {
+    imageId: {
+      default: null,
+    },
+  },
+
+  computed: {
+    state() {
+      if (this.loading) {
+        return states.loading
+      } else {
+        if (this.imageId) {
+          return states.loaded
+        } else {
+          return states.default
+        }
+      }
+    },
+    text() {
+      if (this.state === states.loading) {
+        return "Загрузка..."
+      } else if (this.imageId) {
+        return "Удалить изображение"
+      } else {
+        return "Загрузить изображение"
+      }
+    },
+    imageUrl() {
+      if (this.imageId) {
+        const url = ImageService.getImageURL(this.imageId)
+        return `--bg-image: url('${url}')`
+      } else return ''
+    }
+  },
+
+  methods: {
+    async changeId(event) {
+      this.loading = true
+      this.inputDisabled = true
+
+      const file = event.target.files[0]
+      const uploadedFile = await ImageService.uploadImage(file)
+      this.$emit('change', uploadedFile.id)
+
+      this.loading = false
+      this.inputDisabled = false
+    },
+    deleteId(event) {
+      if (this.state === states.loaded) {
+        event.preventDefault();
+        this.$refs.fileref.value = ''
+        this.$emit('change', null)
+      }
+    }
+  }
 };
 </script>
 
